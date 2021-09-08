@@ -1,0 +1,2 @@
+### CREATE COLLECTION
+GET http://localhost:8080/home/createCollection
