@@ -3,9 +3,7 @@ const gameModel = require('../models/games');
 
 class HomeController {
     async index(req, res) {
-        const response = await documentModel.find();
-        // console.log(response);
-        return res.json({ success: true, message: 'successfully', response });
+        return res.json({ success: true, message: 'successfully' });
     }
 
     /** [GET] /home/createCollection 
