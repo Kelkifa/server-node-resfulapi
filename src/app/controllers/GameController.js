@@ -25,8 +25,8 @@ class GameController {
     async adminGet(req, res) {
         try {
             const [listResponse, trashResponse] = await Promise.all([
-                gameModel.find({}),
-                gameModel.findDeleted({})
+                gameModel.find({}).sort({ createdAt: 'desc' }),
+                gameModel.findDeleted({}).sort({ createdAt: 'desc' })
             ]);
             return res.json({ success: true, message: 'successfully', listResponse, trashResponse });
         } catch (err) {
@@ -51,6 +51,23 @@ class GameController {
         }
     }
 
+    /** [DELETE] /api/games/delete
+     *  Admin force delete games
+     *  Private
+    */
+    async forceDelete(req, res) {
+        const data = req.body ? req.body : [];
+
+        if (!data.length) return res.state(404).json({ success: false, message: 'bad request' })
+        try {
+            await gameModel.deleteMany({ _id: { $in: data } });
+            return res.json({ success: true, message: 'successfully', response: data });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json({ success: false, message: 'internal server' });
+        }
+    }
+
     /** [PATCH] /api/games/restore
      *  Admin restore delete games
      *  Private
@@ -64,6 +81,30 @@ class GameController {
         } catch (err) {
             console.log(err);
             return res.status(500).json({ success: false, message: 'internal server' });
+        }
+    }
+
+    /** [POST] /api/games/create
+     *  Admin Create Games
+     *  Private
+     */
+    async create(req, res) {
+        const { data } = req.body;
+        if (!data)
+            return res.json({ success: false, message: 'bad request' });
+        if (!data.data.length)
+            return res.json({ success: false, message: 'bad request' });
+
+        try {
+            const newData = data.data.map(value => { return { data: value, type: data.type } });
+            const newGame = await gameModel.create(newData);
+            console.log('[NEW GAME]', newGame);
+
+            return res.json({ success: true, message: 'successfully', response: newGame });
+
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json({ success: false, message: 'internal server' })
         }
     }
 }
