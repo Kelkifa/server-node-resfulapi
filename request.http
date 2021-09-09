@@ -1,2 +1,5 @@
 ### CREATE COLLECTION
 GET http://localhost:8080/home/createCollection
+
+### ADMIN GAME GET
+GET http://localhost:8080/api/games/adminGet
