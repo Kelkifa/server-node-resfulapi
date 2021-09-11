@@ -9,7 +9,7 @@ class GameController {
     */
     async clientGet(req, res) {
         try {
-            const response = await gameModel.find({});
+            const response = await gameModel.find({}).sort({ createdAt: 'desc' });
             return res.json({ success: true, message: 'successfully', response });
         } catch (err) {
             console.log(err);
