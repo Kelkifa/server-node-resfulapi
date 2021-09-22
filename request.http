@@ -3,3 +3,15 @@ GET http://localhost:8080/home/createCollection
 
 ### ADMIN GAME GET
 GET http://localhost:8080/api/games/adminGet
+
+
+### NOTE GET
+GET http://localhost:8080/api/todos/get
+
+### NOTE ADD
+POST http://localhost:8080/api/notes/add
+Content-Type: application/json
+
+{
+    "data":"haha"
+}
