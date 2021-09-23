@@ -15,3 +15,6 @@ Content-Type: application/json
 {
     "data":"haha"
 }
+
+### NOTE DELETE MANY
+DELETE http://localhost:8080/api/notes/delete

@@ -17,7 +17,8 @@ const todos = new Schema(
             year: { type: Number, required: true }
         },
         startTime: { type: Array, default: [0, 0] },
-        endTime: { type: Array, default: [0, 0] }
+        endTime: { type: Array, default: [0, 0] },
+        color: { type: String }
     },
     {
         timestamps: true
