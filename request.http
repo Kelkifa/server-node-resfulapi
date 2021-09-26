@@ -9,7 +9,7 @@ GET http://localhost:8080/api/games/adminGet
 GET http://localhost:8080/api/todos/get
 
 ### NOTE ADD
-POST http://localhost:8080/api/notes/add
+POST http://localhost:8080/api/todos/add
 Content-Type: application/json
 
 {
@@ -17,4 +17,4 @@ Content-Type: application/json
 }
 
 ### NOTE DELETE MANY
-DELETE http://localhost:8080/api/notes/delete
+DELETE http://localhost:8080/api/todos/delete
