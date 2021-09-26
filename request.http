@@ -18,3 +18,8 @@ Content-Type: application/json
 
 ### NOTE DELETE MANY
 DELETE http://localhost:8080/api/todos/delete
+Content-Type: application/json
+
+{
+    "data":"haha"
+}

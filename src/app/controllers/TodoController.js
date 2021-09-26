@@ -8,7 +8,6 @@ class NoteController {
     async get(req, res) {
         try {
             const response = await todoModel.find({});
-            console.log(`[note list]`, response);
             return res.json({ success: true, message: 'successfully', response });
         } catch (err) {
             console.log('[ERROR]', err);
@@ -32,30 +31,35 @@ class NoteController {
      *  Delete all todo list
      *  dev
     */
-    async deletes(req, res) {
-        try {
-            await todoModel.deleteMany({});
-            return res.json({ success: true, message: 'successfully' });
-        } catch (err) {
-            return res.status(500).json({ success: false, message: 'internal server' });
-        }
-    }
+    // async deletes(req, res) {
+    //     try {
+    //         await todoModel.deleteMany({});
+    //         return res.json({ success: true, message: 'successfully' });
+    //     } catch (err) {
+    //         return res.status(500).json({ success: false, message: 'internal server' });
+    //     }
+    // }
 
     /** [DELETE] /api/todos/delete 
      *  Delete a todo
      *  public (logged)
     */
     async delete(req, res) {
-        const data = req.body;
-        if (!data) return res.status(404).json({ success: false, message: 'bad request' });
-
+        const { data } = req.body;
+        console.log(data);
+        // console.log(`[req body]`, req.body);
+        if (!data) return req.status(404).json({ success: false, message: 'bad request' });
         try {
             await todoModel.deleteOne({ _id: data });
-            return res.json({ success: true, message: 'succesfully', response: data })
+            return res.json({ success: true, message: 'successfully', response: data });
         } catch (err) {
             return res.status(500).json({ success: false, message: 'internal server' });
         }
     }
+    // async test(req, res) {
+    //     console.log(req.body);
+    //     return res.json({ success: true, message: 'succesfully' });
+    // }
 }
 
 module.exports = new NoteController;
