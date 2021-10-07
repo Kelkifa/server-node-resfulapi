@@ -19,15 +19,17 @@ class DocController {
         }
     }
 
-    /** [GET] /api/docs/getContent
-     *  Get content from type req data
+    /** [POST] /api/docs/getContent
+     *  Get content from type req data (req is typeId)
      *  Publich (logged)
      */
     async getContent(req, res) {
         const { data } = req.body;
-        if (!data) return res.stateu(400).json({ success: false, message: 'bad requrest' });
+        console.log(`[req]`, req.body);
+        if (!data) return res.status(400).json({ success: false, message: 'bad requrest' });
         try {
-            const response = await docModel.find({ _id: data });
+            const response = await docModel.find({ typeId: data }).populate('typeId');
+            console.log(`[doc content response]`, response);
             return res.json({ success: true, message: 'successfully', response, typeId: data });
 
         } catch (err) {
@@ -67,7 +69,7 @@ class DocController {
                 data.typeId = foundDocType._id;
             }
 
-            console.log(`[data]`, data);
+            // console.log(`[data]`, data);
 
             const newData = await docModel.create(data).then(value => value.populate('typeId'));
 

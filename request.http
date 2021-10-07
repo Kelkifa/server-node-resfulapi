@@ -31,8 +31,17 @@ Content-Type: application/json
 
 {
     "data":{
-        "type":"Nodejs new 2",
-        "content":"This is the nodejs new 2 content",
-        "title":"Nodejs new 2 title" 
+        "type":"Nodejs new 3",
+        "content":"This is the nodejs new 3 content",
+        "title":"Nodejs new 3 title" 
     }
+}
+
+### get doc Content
+
+GET http://localhost:8080/api/docs/getContent
+Content-Type: application/json
+
+{
+    "data":"615ec6fe6249d37fc116bace"
 }
