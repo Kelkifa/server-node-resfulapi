@@ -7,9 +7,6 @@ const ObjectId = Schema.ObjectId;
 const doctypes = new Schema(
     {
         type: { type: String, required: true }
-    },
-    {
-        timestamps: true
     }
 );
 doctypes.plugin(mongoose_delete, { overrideMethods: 'all' });
