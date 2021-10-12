@@ -46,7 +46,7 @@ class NoteController {
     */
     async delete(req, res) {
         const { data } = req.body;
-        console.log(data);d
+        console.log(data);
         // console.log(`[req body]`, req.body);
         if (!data) return req.status(404).json({ success: false, message: 'bad request' });
         try {

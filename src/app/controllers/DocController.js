@@ -25,12 +25,10 @@ class DocController {
      */
     async getContent(req, res) {
         const { data } = req.body;
-        console.log(`[req]`, req.body);
         if (!data) return res.status(400).json({ success: false, message: 'bad requrest' });
         try {
-            const response = await docModel.find({ typeId: data }).populate('typeId');
-            console.log(`[doc content response]`, response);
-            return res.json({ success: true, message: 'successfully', response, typeId: data });
+            const response = await docModel.find({ typeId: data });
+            return res.json({ success: true, message: 'successfully', response });
 
         } catch (err) {
             console.log(`[doc err]`, err);
@@ -53,9 +51,7 @@ class DocController {
         // return res.json({ success: true, message: 'successfully' });
         if (!data || !data.type || !data.content || !data.title) {
             return res.status(400).json({ success: false, message: 'bad request' });
-
         }
-
 
         try {
             const { type } = data;
@@ -71,7 +67,7 @@ class DocController {
 
             // console.log(`[data]`, data);
 
-            const newData = await docModel.create(data).then(value => value.populate('typeId'));
+            const newData = await docModel.create(data);
 
             return res.json({ success: true, message: 'successfully', response: newData });
 
