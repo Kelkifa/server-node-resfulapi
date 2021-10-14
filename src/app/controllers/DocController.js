@@ -36,7 +36,7 @@ class DocController {
         }
     }
 
-    /** [POST] /api/docs/create 
+    /** [POST] /api/docs/createDoc 
      *  Save data from client
      *  DataSchema: { 
      *      type: {type: String, e.g: nodejs}, 
@@ -45,37 +45,80 @@ class DocController {
      * } 
      *  Public (Logged)
     */
-    async create(req, res) {
+    async createDoc(req, res) {
         const { data } = req.body;
-        // console.log(`[req body]`, req.body);
         // return res.json({ success: true, message: 'successfully' });
-        if (!data || !data.type || !data.content || !data.title) {
-            return res.status(400).json({ success: false, message: 'bad request' });
+        if (!data) {
+            return res.status(400).json({ success: false, message: 'bad request', response: newDocType });
         }
 
         try {
-            const { type } = data;
-            const foundDocType = await docTypeModel.findOne({ type });
+            const newDocType = await docTypeModel.create({ type: data.type });
+            const { title, content } = data;
+            const newDoc = await docModel.create({ title, content, typeId: newDocType._id });
 
-            if (!foundDocType) {
-                const newDocType = await docTypeModel.create({ type });
-                data.typeId = newDocType._id;
-            }
-            else {
-                data.typeId = foundDocType._id;
-            }
-
-            // console.log(`[data]`, data);
-
-            const newData = await docModel.create(data);
-
-            return res.json({ success: true, message: 'successfully', response: newData });
-
-
+            return res.json({ success: true, message: 'successfully', response: newDocType });
         } catch (err) {
             console.log(err)
             return res.status(500).json({ success: false, message: 'internal server' });
         }
+
+    }
+    /** [POST] /api/docs/createContent 
+     *  Save data from client
+     *  DataSchema: { 
+     *      type: {type: String, e.g: nodejs}, 
+     *      title: {type: String, e.g: 'tieu de'}, 
+     *      content: {type: String. e.g: 'noi dung'}
+     * } 
+     *  Public (Logged)
+    */
+    async createContent(req, res) {
+        const { data } = req.body;
+        if (!data) return res.status(404).json({ success: false, message: 'bad request' })
+
+        try {
+
+            // Kiểm tra tồn tại typeId
+            const existTypeId = await docTypeModel.findOne({ _id: data.type });
+            if (!existTypeId) return res.status(404).json({ success: false, message: 'bad request' });
+
+            const newData = { ...data, typeId: data.type };
+            const response = await docModel.create(newData);
+
+            return res.json({ success: true, message: 'Successfully', response });
+        } catch (err) {
+            console.log(err)
+            return res.status(500).json({ success: false, message: 'internal server' });
+        }
+
+    }
+    /** [DELETE] /api/docs/delete
+     *  Delete a doc
+     *  Public (logged)
+     */
+    async delete(req, res) {
+        const { data: docId } = req.body;
+        // console.log("[docId]", req.body);
+
+
+        // return res.json({ success: true, message: 'bad requres' });
+        if (!docId) return res.status(404).json({ success: true, message: 'bad requres' });
+
+        try {
+            await Promise.all([
+                docTypeModel.delete({ _id: docId }),
+                docModel.deleteMany({ typeId: docId })
+            ]);
+
+            return res.json({ success: true, message: 'successfully' });
+
+        } catch (err) {
+
+            console.log(`[DOC DELETE ERR]`, err);
+            res.status(500).json({ success: true, message: 'internal sever' });
+        }
+
     }
 
 }
