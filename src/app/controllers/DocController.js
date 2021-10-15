@@ -93,13 +93,13 @@ class DocController {
         }
 
     }
-    /** [DELETE] /api/docs/delete
+    /** [DELETE] /api/docs/deleteDoc
      *  Delete a doc
      *  Public (logged)
      */
-    async delete(req, res) {
+    async deleteDoc(req, res) {
         const { data: docId } = req.body;
-        // console.log("[docId]", req.body);
+        console.log("[docId]", req.body);
 
 
         // return res.json({ success: true, message: 'bad requres' });
@@ -119,6 +119,22 @@ class DocController {
             res.status(500).json({ success: true, message: 'internal sever' });
         }
 
+    }
+    /** [DELETE] /api/docs/deleteContent
+     *  Delete a title and its content of doc by typeId
+     *  public (logged)
+     */
+    async deleteContent(req, res) {
+        const { data: docContentId } = req.body;
+        if (!docContentId) return res.status(404).json({ success: false, message: 'bad request' });
+        try {
+            await docModel.deleteOne({ _id: docContentId });
+
+            return res.json({ success: true, message: 'successfully' });
+        } catch (err) {
+            console.log(`[DOC DELETE CONTENT ERR]`, err);
+            return res.status(500).json({ success: true, message: 'internal sever' });
+        }
     }
 
 }
