@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.delete('/deleteContent', DocController.deleteContent);
 router.delete('/deleteDoc', DocController.deleteDoc);
+router.put('/updateContent', DocController.updateContent);
 router.post('/createDoc', DocController.createDoc);
 router.post('/createContent', DocController.createContent);
 router.get('/getTypes', DocController.getTypeList);

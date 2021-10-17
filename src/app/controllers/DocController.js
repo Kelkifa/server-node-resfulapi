@@ -93,6 +93,29 @@ class DocController {
         }
 
     }
+    /** [PUT] /api/docs/updateContent
+     *  Update a content in docModel
+     *  public (logged)
+     */
+    async updateContent(req, res) {
+        const { data } = req.body;
+        if (!data)
+            return res.status(404).json({ success: false, message: 'bad request' });
+        const { _id, title, content, typeId } = data;
+        if (!_id || !title || !content || !typeId)
+            return res.status(404).json({ success: false, message: 'bad request' });
+        try {
+            const response = await docModel.findOneAndUpdate({ _id: data._id }, { title, content }, { new: true });
+            console.log(`[response]`, response);
+
+            return res.json({ success: true, message: 'successfully', response });
+        } catch (err) {
+            console.log(`[DOC UPDATE CONTENT ERR]`, err);
+            return res.status(500).json({ success: false, message: 'internal server' })
+        }
+
+    }
+
     /** [DELETE] /api/docs/deleteDoc
      *  Delete a doc
      *  Public (logged)
