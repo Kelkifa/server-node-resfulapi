@@ -45,3 +45,26 @@ Content-Type: application/json
 {
     "data":"615ec6fe6249d37fc116bace"
 }
+
+### Register 
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+    "data":{
+        "fullname":"Pham Long Huan",
+        "username":"huan",
+        "password":"Kelkifa123"
+    }
+}
+
+### Login
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+    "data":{
+        "username":"huan",
+        "password":"Kelkifa123"
+    }
+}
