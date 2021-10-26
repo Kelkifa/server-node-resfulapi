@@ -22,6 +22,8 @@ class AuthController {
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             const { userId } = decoded;
+
+            console.log(`[decoded]`, decoded);
             if (!userId) return res
                 .status(401)
                 .json({ success: false, message: 'Access token not found' });
@@ -69,7 +71,7 @@ class AuthController {
             const newUser = await userModel.create({ username, fullname, password: hashedPassword, isAdmin: false });
 
             // Token
-            const accessToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET);
+            const accessToken = jwt.sign({ userId: newUser._id, isAdmin: newUser.isAdmin }, process.env.JWT_SECRET);
             // console.log(`[accessToken]`, accessToken);
 
             // console.log(`[register response ]`, response);
@@ -115,7 +117,8 @@ class AuthController {
             // Password is not true
             if (!isPassword) return res.status(404).json({ success: false, message: 'not found' })
 
-            const accessToken = jwt.sign({ userId: foundUser._id }, process.env.JWT_SECRET);
+            // Create token
+            const accessToken = jwt.sign({ userId: foundUser._id, isAdmin: foundUser.isAdmin }, process.env.JWT_SECRET);
 
             // All good
             return res.json(
