@@ -1,6 +1,8 @@
 # Default setup node.js restful api server with mvc models
 
-Link demo: https://thuongvachon.web.app/
+## Demo
+
+Link: https://thuongvachon.web.app/
 
 ## Folder Organization
 
@@ -24,6 +26,6 @@ Link demo: https://thuongvachon.web.app/
 
 ```
 
-## email
+## about us
 
 huanpham455@gmail.com
