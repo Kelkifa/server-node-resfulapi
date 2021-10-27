@@ -116,13 +116,13 @@ class AuthController {
 
 
             // Not see username
-            if (!foundUser) return res.status(404).json({ success: false, message: 'not found' });
+            if (!foundUser) return res.status(404).json({ success: false, message: 'Tài khoản hoạc mật khẩu không chính xác' });
 
             // Compare password
             const isPassword = await argon2.verify(foundUser.password, data.password);
 
             // Password is not true
-            if (!isPassword) return res.status(404).json({ success: false, message: 'not found' })
+            if (!isPassword) return res.status(404).json({ success: false, message: 'Tài khoản hoạc mật khẩu không chính xác' })
 
             // Create token
             const accessToken = jwt.sign({ userId: foundUser._id, isAdmin: foundUser.isAdmin }, process.env.JWT_SECRET);
