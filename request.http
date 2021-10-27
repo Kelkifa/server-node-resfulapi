@@ -1,3 +1,6 @@
+### GAME CLIENT GET
+GET https://thuongvachon.herokuapp.com/api/games/clientGet
+
 ### CREATE COLLECTION
 GET http://localhost:8080/home/createCollection
 
