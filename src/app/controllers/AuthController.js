@@ -39,6 +39,7 @@ class AuthController {
                     response: {
                         _id: foundUser._id,
                         fullname: foundUser.fullname,
+                        username: foundUser.username,
                         isAdmin: foundUser.isAdmin
                     }
                 }
@@ -80,7 +81,13 @@ class AuthController {
                 {
                     success: true,
                     message: 'successfully',
-                    response: { _id: newUser._id, fullname: newUser.fullname, isAdmin: newUser.isAdmin },
+                    response: {
+                        _id: newUser._id,
+                        username: newUser.username,
+                        fullname: newUser.fullname,
+                        isAdmin: newUser.isAdmin
+
+                    },
                     token: accessToken
                 });
 
