@@ -23,13 +23,14 @@ class AuthController {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             const { userId } = decoded;
 
-            console.log(`[decoded]`, decoded);
             if (!userId) return res
                 .status(401)
                 .json({ success: false, message: 'Access token not found' });
 
             const foundUser = await userModel.findOne({ _id: userId });
             if (!foundUser) return res.json({ success: false, message: 'user not found' });
+
+
 
 
             return res.json(
@@ -58,11 +59,19 @@ class AuthController {
     async register(req, res) {
         const { data = {} } = req.body;
 
-        if (typeof data !== 'object') return res.status(404).json({ success: false, message: 'bad request' });
-        if (!data.username || !data.password) return res.status(404).json({ success: false, message: 'bad request' })
+        if (typeof data !== 'object') return res
+            // .status(404)
+            .json({ success: false, message: 'bad request' });
+        if (!data.username || !data.password) return res
+            // .status(404)
+            .json({ success: false, message: 'bad request' })
 
         try {
             const { username, fullname, password } = data;
+
+            const existUser = await userModel.find({ username });
+            if (existUser.length > 0)
+                return res.json({ success: false, message: 'User is exist' });
 
             const hashedPassword = await argon2.hash(password);
 
@@ -93,7 +102,9 @@ class AuthController {
 
         } catch (err) {
             console.log(`[AUTH REGISTER ERR]`, err);
-            return res.status(500).json({ success: false, message: 'internal server' });
+            return res
+                // .status(500)
+                .json({ success: false, message: 'internal server' });
         }
     }
 
@@ -104,7 +115,10 @@ class AuthController {
     async login(req, res) {
         const { data = {} } = req.body;
 
-        if (typeof data !== 'object') return res.status(400).json({ success: false, message: 'bad request' });
+        if (typeof data !== 'object')
+            return res
+                // .status(400)
+                .json({ success: false, message: 'bad request' });
 
         if (!data.username || !data.password) return res.status(400).json({ success: false, message: 'bad request' });
 
@@ -116,23 +130,33 @@ class AuthController {
 
 
             // Not see username
-            if (!foundUser) return res.status(404).json({ success: false, message: 'Tài khoản hoạc mật khẩu không chính xác' });
+            if (!foundUser) return res
+                // .status(404)
+                .json({ success: false, message: 'Tài khoản hoạc mật khẩu không chính xác' });
 
             // Compare password
             const isPassword = await argon2.verify(foundUser.password, data.password);
 
             // Password is not true
-            if (!isPassword) return res.status(404).json({ success: false, message: 'Tài khoản hoạc mật khẩu không chính xác' })
+            if (!isPassword) return res
+                // .status(404)
+                .json({ success: false, message: 'Tài khoản hoạc mật khẩu không chính xác' })
 
             // Create token
             const accessToken = jwt.sign({ userId: foundUser._id, isAdmin: foundUser.isAdmin }, process.env.JWT_SECRET);
+
 
             // All good
             return res.json(
                 {
                     success: true,
                     message: 'successfully',
-                    response: { _id: foundUser._id, fullname: foundUser.fullname, isAdmin: foundUser.isAdmin },
+                    response: {
+                        _id: foundUser._id,
+                        fullname: foundUser.fullname,
+                        username: foundUser.username,
+                        isAdmin: foundUser.isAdmin
+                    },
                     token: accessToken
                 })
 
