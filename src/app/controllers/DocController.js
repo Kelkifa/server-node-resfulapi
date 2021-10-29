@@ -131,7 +131,7 @@ class DocController {
         try {
             await Promise.all([
                 docTypeModel.delete({ _id: docId }),
-                docModel.deleteMany({ typeId: docId })
+                docModel.delete({ typeId: docId })
             ]);
 
             return res.json({ success: true, message: 'successfully' });
@@ -151,7 +151,7 @@ class DocController {
         const { data: docContentId } = req.body;
         if (!docContentId) return res.status(404).json({ success: false, message: 'bad request' });
         try {
-            await docModel.deleteOne({ _id: docContentId });
+            await docModel.delete({ _id: docContentId });
 
             return res.json({ success: true, message: 'successfully' });
         } catch (err) {
