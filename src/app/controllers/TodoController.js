@@ -7,7 +7,7 @@ class NoteController {
     */
     async get(req, res) {
         try {
-            const response = await todoModel.find({});
+            const response = await todoModel.find({}).sort({ createdAt: 'desc' });
             return res.json({ success: true, message: 'successfully', response });
         } catch (err) {
             console.log('[ERROR]', err);

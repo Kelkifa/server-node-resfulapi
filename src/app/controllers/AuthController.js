@@ -167,6 +167,11 @@ class AuthController {
 
     }
 
+
+    getUser(req, res) {
+
+    }
+
 }
 
 module.exports = new AuthController;
