@@ -7,7 +7,7 @@ const ObjectId = Schema.ObjectId;
 const doctypes = new Schema(
     {
         type: { type: String, required: true },
-        docGroup: { type: Schema.type.ObjectId, ref: 'docGroups' }
+        docGroup: { type: Schema.Types.ObjectId, ref: 'docGroups' }
     }
 );
 doctypes.plugin(mongoose_delete, { overrideMethods: 'all' });

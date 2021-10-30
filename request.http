@@ -55,8 +55,8 @@ Content-Type: application/json
 
 {
     "data":{
-        "fullname":"Pham Long Huan",
-        "username":"huan",
+        "fullname":"Tran Thi Diem Thuong",
+        "username":"tdtthuong",
         "password":"Kelkifa123"
     }
 }
@@ -71,3 +71,17 @@ Content-Type: application/json
         "password":"Kelkifa123"
     }
 }
+
+
+############ TEST ####################
+POST http://localhost:8080/api/docs/createGroup
+Content-Type: application/json
+
+{
+    "name":"Group 1",
+    "usernames":["huan", "tdtthuong"]
+}
+
+
+# Get group
+GET http://localhost:8080/api/docs/getGroup

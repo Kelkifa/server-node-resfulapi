@@ -1,6 +1,7 @@
 const docTypeModel = require('../models/doctypes');
 const docModel = require('../models/docs');
-const mongoose = require('mongoose');
+const docGroupModel = require('../models/docGroups');
+const userModel = require('../models/user');
 
 class DocController {
     /** [GET] /api/docs/getTypes
@@ -35,6 +36,10 @@ class DocController {
             return res.statue(500).json({ success: false, message: 'internal server' });
         }
     }
+
+
+
+
 
     /** [POST] /api/docs/createDoc 
      *  Save data from client
@@ -157,6 +162,54 @@ class DocController {
         } catch (err) {
             console.log(`[DOC DELETE CONTENT ERR]`, err);
             return res.status(500).json({ success: true, message: 'internal sever' });
+        }
+    }
+
+
+
+
+    /**** TEST ***/
+
+    /**
+     * [POST] /api/docs/createGroup
+     * create a group to add member
+     * @param {*} req req.body = {name: String}
+     * @param {*} res 
+     */
+
+    async createDocGroup(req, res) {
+        const { name, usernames = [] } = req.body;
+
+        console.log(req.body);
+        if (!name) return res.json({ success: false, message: 'bad request' });
+
+        try {
+            const foundUser = await userModel.find({ username: { $in: usernames } }).select('_id');
+
+            const response = await docGroupModel.create({ name, users: foundUser.map(value => value._id) })
+
+            return res.json({ success: true, message: 'successfully', response });
+        } catch (err) {
+            console.log(`[create group err]`, err);
+            return res.json({ success: false, message: 'internal server' });
+        }
+    }
+
+    /**
+     * [GEt] /api/docs/getGroup
+     * 
+     * @param {Object} req request
+     * @param {Object} res response
+     * @returns 
+     */
+    async getDocGroup(req, res) {
+        try {
+            const response = await docGroupModel.find().populate({ path: 'users', select: "_id username fullname" });
+
+            return res.json({ success: true, message: 'successfully', response });
+
+        } catch (err) {
+            return res.json({ success: false, message: 'internal server' });
         }
     }
 
