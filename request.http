@@ -82,6 +82,5 @@ Content-Type: application/json
     "usernames":["huan", "tdtthuong"]
 }
 
-
-# Get group
+### Get group
 GET http://localhost:8080/api/docs/getGroup
