@@ -6,9 +6,14 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 const docs = new Schema(
     {
-        title: { type: String, required: true },
-        content: { type: String, required: true },
-        typeId: { type: Schema.Types.ObjectId, ref: 'doctypes' }
+        name: { type: String, required: true },
+        contents: [
+            {
+                title: { type: String, required: true, },
+                content: { type: String, required: true }
+            }
+        ],
+        groupId: { type: Schema.Types.ObjectId, ref: 'docgroups' }
     },
     {
         timestamps: true

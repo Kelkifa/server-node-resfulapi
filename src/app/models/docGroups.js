@@ -7,7 +7,8 @@ const ObjectId = Schema.ObjectId;
 const docGroups = new Schema(
     {
         name: { type: String },
-        users: [{ type: String, ref: 'users' }]
+        users: [{ type: String, ref: 'users' }],
+        type: { type: String, default: 'user' }
     },
     {
         timestamps: true
@@ -15,4 +16,4 @@ const docGroups = new Schema(
 );
 docGroups.plugin(mongoose_delete, { overrideMethods: 'all' });
 
-module.exports = mongoose.model('docGroups', docGroups);
+module.exports = mongoose.model('docgroups', docGroups);
