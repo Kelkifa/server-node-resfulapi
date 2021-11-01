@@ -1,5 +1,5 @@
 const docModel = require('../models/docs');
-const groupModel = require('../models/docGroups');
+const groupModel = require('../models/groups');
 const userModel = require('../models/user');
 
 
@@ -30,13 +30,13 @@ class DocController {
     }
 
     /**
-     * [GEt] /api/docs/getGroup
+     * [GEt] /api/docs/getGroups
      * 
      * @param {Object} req request
      * @param {Object} res response
      * @returns 
      */
-    async getDocGroup(req, res) {
+    async getGroup(req, res) {
         const { userId } = req.body;
 
         try {
@@ -94,6 +94,60 @@ class DocController {
         }
     }
 
+    /**
+     * [GET] /api/docs/getDoc
+     * public for getting demo doc || logged fro getting demo and user's docs
+     * @param {Object} req {userId: { id of user(nullable) },   groupId: {id of group}}
+     * @param {*} res 
+     * @returns {Array} docs list
+     */
+    async getDocNameList(req, res) {
+        const { userId, groupId } = req.body;
+
+        if (!groupId) return res.json({ success: false, message: 'bad request' });
+
+        try {
+            /** Not see group or user in group */
+            const groupExistFlag = await groupModel.findOne({ _id: groupId, $or: [{ users: userId }, { type: 'demo' }] }).select('_id type');
+            if (!groupExistFlag) return res.json({ success: false, message: 'not found' });
+
+            /** Get Docs */
+            // All good
+            const response = await docModel.find({ groupId: groupId }).select('_id name');
+            return res.json({ success: true, message: 'successfully', response: response });
+        } catch (err) {
+            console.log(`[DOC GET ERR]`, err);
+            return res.json({ success: false, message: 'internal server' });
+        }
+    }
+
+    /**
+     * [GET] /api/docs/getDocDetail
+     * Get detail of docs (contents , name)
+     * @param {*} req {userId, groupId, docId}
+     * @param {*} res 
+     */
+
+    async getDocDetail(req, res) {
+        const { userId, groupId, docId } = req.body;
+
+        if (!docId || !groupId) return res.json({ success: false, message: 'bad request' });
+
+        try {
+            /** Not see group or user in group */
+            const groupExistFlag = await groupModel.findOne({ _id: groupId, $or: [{ users: userId }, { type: 'demo' }] }).select('_id type');
+            if (!groupExistFlag) return res.json({ success: false, message: 'not found' });
+
+            /** Get doc */
+            // All good
+            const response = await docModel.findOne({ _id: docId, groupId });
+            return response.json({ success: true, message: 'successfully', response });
+
+        } catch (err) {
+            console.log(`[DOC GET DETAIL ERR]`, err);
+            return res.json({ success: false, message: 'internal server' });
+        }
+    }
 }
 
 module.exports = new DocController;

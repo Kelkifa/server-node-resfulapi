@@ -7,7 +7,7 @@ const port = process.env.PORT || 8080;
 const rateLimit = require('express-rate-limit');
 const requrestLimit = rateLimit({
     windowMs: 15 * 60 * 1000, // 5 minutes
-    max: 100
+    max: 200
 });
 app.use(requrestLimit);
 

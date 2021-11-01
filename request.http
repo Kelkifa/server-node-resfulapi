@@ -90,14 +90,36 @@ Content-Type: application/json
     "userId":"617c0f10e97f8ab22b12e4a1"
 }
 
-### Create doc
+### Create doc userId :thuong
 POST http://localhost:8080/api/docs/createDoc
 Content-Type: application/json
 
 {
-    "name":"Javascript",
+    "name":"CSS",
     "userId":"617c0f43e97f8ab22b12e4a4",
-    "title": "Variables",
-    "content": "Variables",
+    "title": "Padding",
+    "content": "Padding",
+    "groupId": "617d5b1b9aec4e5642da1d92"
+}
+
+### Get doc name list
+
+GET http://localhost:8080/api/docs/getDoc
+Content-Type: application/json
+
+{
+    "userId": "",
     "groupId": "617d500cd146d3699a5ce899"
+}
+
+
+### Get doc detail
+GET http://localhost:8080/api/docs/getDocDetail
+
+Content-Type: application/json
+
+{
+    "userId": "617c0f10e97f8ab22b12e4a1",
+    "groupId": "617d5b1b9aec4e5642da1d92",
+    "docId":"617d5c239aec4e5642da1d97"
 }
