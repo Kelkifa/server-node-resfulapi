@@ -9,7 +9,7 @@ const requrestLimit = rateLimit({
     windowMs: 15 * 60 * 1000, // 5 minutes
     max: 200
 });
-app.use(requrestLimit);
+// app.use(requrestLimit);
 
 /** Models */
 //connect db

@@ -83,11 +83,11 @@ Content-Type: application/json
 }
 
 ### Get group
-GET http://localhost:8080/api/docs/getGroup
+GET http://localhost:8080/api/groups/get
 Content-Type: application/json
 
 {
-    "userId":"617c0f10e97f8ab22b12e4a1"
+    "userId":"617c0f43e97f8ab22b12e4asa4"
 }
 
 ### Create doc userId :thuong

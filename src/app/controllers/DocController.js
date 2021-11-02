@@ -37,7 +37,7 @@ class DocController {
      * @returns 
      */
     async getGroup(req, res) {
-        const { userId } = req.body;
+        const { userId } = req.body
 
         try {
             // Get group with type === demo  ||  userId in user of group
