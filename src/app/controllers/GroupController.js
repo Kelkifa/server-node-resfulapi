@@ -30,7 +30,7 @@ class GroupController {
         try {
             // Get group with type === demo  ||  userId in user of group
             const response = await groupModel.
-                find({ $or: [{ type: 'demo' }, { users: userId }] }).populate({ path: 'users', select: "_id username fullname" });
+                find({ $or: [{ type: 'demo' }, { users: userId }] }).populate({ path: 'users', select: "_id username fullname type" });
 
             return res.json({ success: true, message: 'successfully', response });
 
@@ -87,7 +87,7 @@ class GroupController {
 
         try {
             // Check user in group
-            const isUserInGroup = await groupModel.findOne({ _id: groupId, users: userId });
+            const isUserInGroup = await groupModel.findOne({ _id: groupId, users: userId, type: { $not: { $regex: /demo/ } } });
             if (!isUserInGroup) return res.json({ success: false, message: 'not allow' });
 
             // Check added usernames is exist in userModel

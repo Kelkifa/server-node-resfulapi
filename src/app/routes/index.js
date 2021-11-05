@@ -10,7 +10,7 @@ function router(app) {
     app.use('/api/docs', getUserInfoMidleware, docRouter);
     app.use('/api/games', gameRouter);
     app.use('/api/todos', todoRouter);
-    app.use('/api/groups', groupRouter);
+    app.use('/api/groups', getUserInfoMidleware, groupRouter);
 
     app.use('/api/auth', authRouter);
 

@@ -10,9 +10,6 @@ const groups = new Schema(
         users: [{ type: String, ref: 'users' }],
         type: { type: String, default: 'user' }
     },
-    {
-        timestamps: true
-    }
 );
 groups.plugin(mongoose_delete, { overrideMethods: 'all' });
 
