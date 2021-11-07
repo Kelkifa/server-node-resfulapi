@@ -123,3 +123,38 @@ Content-Type: application/json
     "groupId": "617d5b1b9aec4e5642da1d92",
     "docId":"617d5c239aec4e5642da1d97"
 }
+
+
+### doc create content
+POST http://localhost:8080/api/docs/createContent
+Content-Type: application/json
+
+{
+    "userId":"617c0f10e97f8ab22b12e4a1",
+    "groupId":"6185432d4db393e45c580824",
+    "docId":"618548384510160c74ac1e5d",
+    "title":"iu mài 3",
+    "content":"noi dung iu mai 2"
+}
+
+
+### delete contents
+
+PATH http://localhost:8080/api/docs/deleteContent
+Content-type: application/json
+
+{
+    "userId":"617c0f10e97f8ab22b12e4a1",
+    "docId":"6186926bc775dfb22deafbcd",
+    "contentId":"6186926bc775dfb22deafbce"
+}
+
+
+### always change
+
+POST http://localhost:8080/api/docs/alwaysChange
+Content-Type: application/json
+
+{
+    "docId":"618548384510160c74ac1e5d"
+}

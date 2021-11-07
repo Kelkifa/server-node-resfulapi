@@ -1,7 +1,7 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 //Change it
-const mongodbUrl = process.env.MONGODB_URL_TEST;
+const mongodbUrl = process.env.MONGODB_URL;
 
 async function connect() {
     try {

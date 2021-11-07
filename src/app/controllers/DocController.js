@@ -56,16 +56,8 @@ class DocController {
             if (!isUserInGroup) return res.json({ success: false, message: 'not allow' });
 
             // All good
-            const newDoc = new docModel({
-                name,
-                content: [
-                    title,
-                    content
-                ],
-                groupId
-            })
 
-            const response = await newDoc.save(newDoc);
+            const response = await docModel.create({ name, contents: [{ title, content }], groupId });
             return res.json({ success: true, message: 'successfully', response });
 
 
@@ -74,6 +66,42 @@ class DocController {
             return res.json({ success: false, message: 'internal server' });
         }
 
+    }
+
+
+    /**
+     * [POST] /api/docs/createContent
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
+    async creatContent(req, res) {
+        const { userId, groupId, docId, title, content } = req.body;
+
+
+        if (!groupId || !docId || !title || !content) return res.json({ success: false, message: 'bad request' });
+
+        try {
+
+            // Check user in group
+            const isUserExistInGroup = await docModel
+                .findOne({ _id: docId, groupId })
+                .populate({ path: 'groupId', match: { users: userId }, select: '_id' })
+                .select('_id groupId');
+
+            if (!isUserExistInGroup) return res.json({ success: false, message: 'not allow' });
+            if (!isUserExistInGroup.groupId) return res.json({ success: false, message: 'not allow' });
+
+            const response = await docModel.findOneAndUpdate({ _id: docId }, { $push: { contents: { title, content } } }, { new: true });
+
+
+            return res.json({ success: true, message: 'successfully', response });
+
+
+        } catch (err) {
+            console.log(`[DOC CREATE CONTENT ERR]`, err);
+            return res.json({ success: false, message: 'internal server' });
+        }
     }
 
 
@@ -107,6 +135,163 @@ class DocController {
             return res.json({ success: false, message: 'internal server' });
         }
 
+    }
+
+    /**
+     * [PATCH] /api/docs/updateDoc
+     * @param {*} req {userId, docId, name}
+     * @param {*} res 
+     * @returns 
+     */
+    async updateDoc(req, res) {
+        const { userId, docId, name } = req.body;
+
+        if (!userId || !docId || !name) return res.json({ success: false, message: 'bad request' });
+
+        try {
+            // Check user in group
+            const isUserExistInGroup = await docModel
+                .findOne({ _id: docId })
+                .populate({ path: 'groupId', match: { users: userId }, select: '_id' })
+                .select('_id groupId');
+
+            if (!isUserExistInGroup) return res.json({ success: false, message: 'Không tìm thấy tài liệu để cập nhật' });
+            if (!isUserExistInGroup.groupId) return res.json({ success: false, message: 'Bạn không trong nhóm này' });
+
+
+            const response = await docModel.findOneAndUpdate({ _id: docId }, { name }, { new: true });
+            return res.json({ success: true, message: 'successfully', response });
+
+        } catch (err) {
+
+            console.log(`[DOC UPDATE DOC ERR]`, err);
+            return res.json({ success: false, message: 'internal server' });
+        }
+    }
+
+
+    /**
+     * [PATCH] /api/docs/updateContent
+     * logged
+     * 
+     * @param {*} req {userId, docId, contentId, title, content}
+     * @param {*} res 
+     */
+    async updateContent(req, res) {
+        const { userId, docId, contentId, title, content } = req.body;
+
+        try {
+            // Check user in group
+            const isUserExistInGroup = await docModel
+                .findOne({ _id: docId })
+                .populate({ path: 'groupId', match: { users: userId }, select: '_id' })
+                .select('_id groupId');
+
+
+            if (!isUserExistInGroup) return res.json({ success: false, message: 'Không tìm thấy tài liệu để cập nhật' });
+            if (!isUserExistInGroup.groupId) return res.json({ success: false, message: 'Bạn không trong nhóm này' });
+
+
+            const response = await docModel
+                .findOneAndUpdate(
+                    { _id: docId, "contents._id": contentId },
+                    { '$set': { 'contents.$': { title, content, _id: contentId } } },
+                    { new: true }
+                );
+
+            return res.json({ success: true, message: 'successfully', response });
+
+        } catch (err) {
+            console.log(`[DOC UPDATE CONTENT ERR]`, err);
+            return res.json({ success: false, message: 'internal server' });
+        }
+
+    }
+
+    /**
+     * [PATCH] /api/docs/deleteDoc
+     * Sort delete a doc
+     * @param {*} req {userId, groupId, docId}
+     * @param {*} res 
+     */
+    async deleteDoc(req, res) {
+        const { userId, docId, groupId } = req.body;
+
+        try {
+            // Check user in group
+            const isUserExistInGroup = await docModel
+                .findOne({ _id: docId, groupId })
+                .populate({ path: 'groupId', match: { users: userId }, select: '_id' })
+                .select('_id groupId');
+
+            if (!isUserExistInGroup) return res.json({ success: false, message: 'Không tìm thấy tài liệu để xoá' });
+            if (!isUserExistInGroup.groupId) return res.json({ success: false, message: 'Bạn không trong nhóm này' });
+
+            await docModel.delete({ _id: docId });
+
+            return res.json({ success: true, message: 'successfully' });
+        } catch (err) {
+            console.log(`[DOC DELETE DOC ERR]`, err);
+            return res.json({ success: false, message: 'internal server' });
+        }
+    }
+
+    /**
+     * [PATCH] /api/docs/deleteContent
+     * @param {*} req {userId, docId, contentId}
+     * @param {*} res 
+     * @returns 
+     */
+    async deleteContent(req, res) {
+        const { userId, docId, contentId } = req.body;
+
+        try {
+
+            // Check user in group
+            const isUserExistInGroup = await docModel
+                .findOne({ _id: docId })
+                .populate({ path: 'groupId', match: { users: userId }, select: '_id' })
+                .select('_id groupId');
+
+            if (!isUserExistInGroup) return res.json({ success: false, message: 'Không tìm thấy tài liệu để xoá' });
+            if (!isUserExistInGroup.groupId) return res.json({ success: false, message: 'Bạn không trong nhóm này' });
+
+            await docModel.updateOne({ _id: docId }, { $pull: { contents: { _id: contentId } } });
+
+
+            const response = await docModel.findOne({ _id: docId });
+            return res.json({ success: true, message: 'succesfully', response });
+
+
+
+        } catch (err) {
+            console.log(`[DOC DELETE CONTENT ERR]`, err);
+
+            return res.json({ success: false, message: err })
+        }
+
+    }
+
+    /**
+     * [POST] /api/docs/alwaysChange
+     * always change
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
+    async alwaysChange(req, res) {
+
+        try {
+
+            await docModel.deleteMany({ groupId: undefined });
+
+            const response = await docModel.find({});
+            return res.json({ success: true, message: 'successfully', response });
+
+        } catch (err) {
+            console.log(err);
+            return res.json({ success: false, message: 'internal server' })
+        }
     }
 
 }

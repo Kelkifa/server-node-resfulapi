@@ -13,7 +13,7 @@ const docs = new Schema(
                 content: { type: String, required: true }
             }
         ],
-        groupId: { type: Schema.Types.ObjectId, ref: 'docgroups' }
+        groupId: { type: Schema.Types.ObjectId, ref: 'groups' }
     },
     {
         timestamps: true
