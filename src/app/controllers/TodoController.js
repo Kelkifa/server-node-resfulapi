@@ -35,37 +35,59 @@ class NoteController {
      *  public (logged)
      */
     async add(req, res) {
-        const { data } = req.body;
-        // console.log('[data]', data);
-        const newTodo = await todoModel.create(data);
-        // console.log('[newTodo]', newTodo);
+        const { data, userId, groupId } = req.body;
 
-        return res.json({ success: true, message: 'succesfully', response: newTodo });
+        if (!groupId || !data) return res.json({ success: false, message: 'bad request' });
+
+        try {
+            const isUserInGroup = await groupModel
+                .exists(
+                    {
+                        _id: groupId,
+                        $or: [{ type: params.DEMO_GROUP_TYPE }, { users: userId }]
+                    },
+                );
+
+            if (!isUserInGroup) return res.json({ success: false, message: 'Bạn không trong nhóm này' });
+
+            // console.log('[data]', data);
+            const response = await todoModel.create({ ...data, groupId });
+            // console.log('[newTodo]', newTodo);
+
+            return res.json({ success: true, message: 'succesfully', response });
+
+        } catch (err) {
+
+            console.log(`[TODO CREATE TODO]`, err);
+            return res.json({ success: true, message: 'internal server' });
+        }
+
+
     }
-    /** [DELETE] /api/todos/deletes
-     *  Delete all todo list
-     *  dev
-    */
-    // async deletes(req, res) {
-    //     try {
-    //         await todoModel.deleteMany({});
-    //         return res.json({ success: true, message: 'successfully' });
-    //     } catch (err) {
-    //         return res.status(500).json({ success: false, message: 'internal server' });
-    //     }
-    // }
 
     /** [DELETE] /api/todos/delete 
      *  Delete a todo
      *  public (logged)
     */
     async delete(req, res) {
-        const { data } = req.body;
-        console.log(data);
+        const { data, userId, groupId } = req.body;
         // console.log(`[req body]`, req.body);
         if (!data) return req.status(404).json({ success: false, message: 'bad request' });
         try {
-            await todoModel.deleteOne({ _id: data });
+
+            // Is user in group
+            const isUserInGroup = await groupModel
+                .exists(
+                    {
+                        _id: groupId,
+                        $or: [{ type: params.DEMO_GROUP_TYPE }, { users: userId }]
+                    },
+                );
+
+            if (!isUserInGroup) return res.json({ success: false, message: 'Bạn không trong nhóm này' });
+
+
+            await todoModel.deleteOne({ _id: data, groupId });
             return res.json({ success: true, message: 'successfully', response: data });
         } catch (err) {
             return res.status(500).json({ success: false, message: 'internal server' });

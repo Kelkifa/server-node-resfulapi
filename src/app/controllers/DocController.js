@@ -285,9 +285,8 @@ class DocController {
 
         try {
 
-            await todoModel.updateMany({}, { groupId: "6185432d4db393e45c580824" });
 
-            const response = await todoModel.find({});
+            const response = await todoModel.deleteOne({ _id: "61892d6f368ecc5c30e1ce67" });
 
             return res.json({ success: true, message: 'successfully', response });
 
