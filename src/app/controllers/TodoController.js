@@ -1,13 +1,28 @@
 const todoModel = require('../models/todos');
+const groupModel = require('../models/groups');
+const params = require('../../cores/params');
 
 class NoteController {
-    /** [GET] /api/notes/get 
+    /** [POST] /api/todos/get 
      *  Get all note of user
      *  Public (logged)
     */
     async get(req, res) {
+        const { userId, groupId } = req.body;
         try {
-            const response = await todoModel.find({}).sort({ createdAt: 'desc' });
+            // Check user in group
+            const isUserInGroup = await groupModel
+                .exists(
+                    {
+                        _id: groupId,
+                        $or: [{ type: params.DEMO_GROUP_TYPE }, { users: userId }]
+                    },
+                );
+
+            if (!isUserInGroup) return res.json({ success: false, message: 'Bạn không trong nhóm này' });
+
+
+            const response = await todoModel.find({ groupId }).sort({ createdAt: 'desc' });
             return res.json({ success: true, message: 'successfully', response });
         } catch (err) {
             console.log('[ERROR]', err);
@@ -21,9 +36,9 @@ class NoteController {
      */
     async add(req, res) {
         const { data } = req.body;
-        console.log('[data]', data);
+        // console.log('[data]', data);
         const newTodo = await todoModel.create(data);
-        console.log('[newTodo]', newTodo);
+        // console.log('[newTodo]', newTodo);
 
         return res.json({ success: true, message: 'succesfully', response: newTodo });
     }

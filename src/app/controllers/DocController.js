@@ -2,6 +2,8 @@ const docModel = require('../models/docs');
 const groupModel = require('../models/groups');
 const userModel = require('../models/user');
 
+const todoModel = require('../models/todos');
+
 class DocController {
     /**
      * [POST] /api/docs/getDocs
@@ -283,9 +285,10 @@ class DocController {
 
         try {
 
-            await docModel.deleteMany({ groupId: undefined });
+            await todoModel.updateMany({}, { groupId: "6185432d4db393e45c580824" });
 
-            const response = await docModel.find({});
+            const response = await todoModel.find({});
+
             return res.json({ success: true, message: 'successfully', response });
 
         } catch (err) {

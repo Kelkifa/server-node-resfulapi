@@ -18,7 +18,8 @@ const todos = new Schema(
         },
         startTime: { type: Array, default: [0, 0] },
         endTime: { type: Array, default: [0, 0] },
-        color: { type: String }
+        color: { type: String },
+        groupId: { type: Schema.Types.ObjectId, ref: 'groups' }
     },
     {
         timestamps: true
