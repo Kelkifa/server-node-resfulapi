@@ -170,3 +170,7 @@ Content-Type: application/json
     "userId": "6176b75b9ba1c3309bdcfd14",
     "groupId": "6185432d4db393e45c580824"
 }
+
+
+### change home
+GET http://localhost:8080/change

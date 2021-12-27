@@ -1,25 +1,30 @@
 const documentModel = require('../models/document');
 const gameModel = require('../models/games');
+const mongoose = require('mongoose');
 
 class HomeController {
     async index(req, res) {
         return res.json({ success: true, message: 'successfully' });
     }
 
-    /** [GET] /home/createCollection 
-     *  Create a new collection in mongodb
-     *  public
-    */
-    // async createCollection(req, res) {
-    //     try {
-    //         const response = await gameModel.find().sort({ createdAt: 'desc' });
-    //         console.log(response);
-    //         return res.json({ success: true, message: response });
-    //     } catch (err) {
-    //         console.log(err);
-    //         return res.json({ success: false, message: 'fail' });
-    //     }
-    // }
+
+    /**
+     * [GET] /change
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
+    async change(req, res) {
+
+        try {
+            const db = mongoose.connection.db;
+            db.collection('games').rename('game2s');
+            return res.json({ success: true, message: 'successfully' });
+        } catch (err) {
+            console.log(err);
+            return res.json({ success: false, message: 'internal server' });
+        }
+    }
 }
 
 module.exports = new HomeController;
