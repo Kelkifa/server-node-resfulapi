@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
  */
 
 function getUserInfoMidleware(req, res, next) {
-    // req.body.userId = undefined;
+    req.body.userId = undefined;
     const authHeader = req.header('Authorization');
     const token = authHeader && authHeader.split(' ')[1]
 
@@ -24,6 +24,8 @@ function getUserInfoMidleware(req, res, next) {
         console.log(`[DECODED GET USERINFO ERR]`, err);
         return next();
     }
+
+    // next();
 
 }
 

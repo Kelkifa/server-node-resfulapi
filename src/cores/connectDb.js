@@ -9,6 +9,8 @@ async function connect() {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
+
+        // Rename the `test` collection to `foobar`
         console.log('Connect successfully');
 
     } catch (err) {

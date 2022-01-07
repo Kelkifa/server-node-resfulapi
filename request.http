@@ -150,6 +150,44 @@ Content-type: application/json
 }
 
 
+### todos
+
+POST http://localhost:8080/api/todos/get
+Content-Type: application/json
+
+{
+    "userId": "6176b75b9ba1c3309bdcfd14",
+    "groupId": "6185432d4db393e45c580824"
+}
+### todo change state
+POST http://localhost:8080/api/todos/changeState
+Content-Type: application/json
+
+{
+    "userId": "6176b75b9ba1c3309bdcfd14",
+    "noteId":"61d022692d321405d3b07f4c",
+    "todoId":"61d11f936dd255b274730f41",
+    "state":"true",
+    "groupId":"6185432d4db393e45c580824"
+}
+
+
+###
+POST http://localhost:8080/api/todos/addTodo
+Content-Type: application/json
+
+{
+    "userId": "6176b75b9ba1c3309bdcfd14",
+    "groupId": "6185432d4db393e45c580824",
+    "todoName":"new todo",
+    "todoId":"61d022692d321405d3b07f4c"
+}
+
+
+### change home
+GET http://localhost:8080/change
+
+
 ### always change
 
 POST http://localhost:8080/api/docs/alwaysChange
@@ -160,17 +198,3 @@ Content-Type: application/json
 }
 
 
-
-### todos
-
-POST http://localhost:8080/api/todos/get
-Content-Type: application/json
-
-{
-    "userId": "6176b75b9ba1c3309bdcfd14",
-    "groupId": "6185432d4db393e45c580824"
-}
-
-
-### change home
-GET http://localhost:8080/change

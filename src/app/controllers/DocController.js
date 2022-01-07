@@ -1,8 +1,10 @@
 const docModel = require('../models/docs');
 const groupModel = require('../models/groups');
-const userModel = require('../models/user');
+
 
 const todoModel = require('../models/todos');
+
+const testModel = require('../models/tests');
 
 class DocController {
     /**
@@ -282,12 +284,16 @@ class DocController {
      * @returns 
      */
     async alwaysChange(req, res) {
-
         try {
 
+            // await testModel.create(newData);
+            // console.log(new Date(2022, 0, 1).getFullYear());
+            // const response = await testModel.find({ $expr: {
+            //     $eq: [{ $year: "$productTime" }, 2017]
+            //     }});
 
-            const response = await todoModel.deleteOne({ _id: "61892d6f368ecc5c30e1ce67" });
-
+            // const response = await todoModel.deleteMany({ title: 'test10' });
+            const response = await todoModel.find({});
             return res.json({ success: true, message: 'successfully', response });
 
         } catch (err) {

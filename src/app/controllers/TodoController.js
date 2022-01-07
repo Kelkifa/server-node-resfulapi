@@ -2,13 +2,16 @@ const todoModel = require('../models/todos');
 const groupModel = require('../models/groups');
 const params = require('../../cores/params');
 
-class NoteController {
+class TodoController {
     /** [POST] /api/todos/get 
      *  Get all note of user
      *  Public (logged)
     */
     async get(req, res) {
-        const { userId, groupId } = req.body;
+        const { userId, groupId, year, month } = req.body;
+
+        if (!groupId || year == undefined || !month == undefined) return res.json({ success: false, message: 'bad request' });
+
         try {
             // Check user in group
             const isUserInGroup = await groupModel
@@ -22,10 +25,23 @@ class NoteController {
             if (!isUserInGroup) return res.json({ success: false, message: 'Bạn không trong nhóm này' });
 
 
-            const response = await todoModel.find({ groupId }).sort({ createdAt: 'desc' });
+            const startDateInMonth = new Date(year, month, 1);
+            const endDateInMonth = new Date(year, month + 1, 0);
+
+            const startDate = new Date(year, month, 1 - startDateInMonth.getDay());
+            const endDate = new Date(year, month, endDateInMonth.getDate() + 6 - endDateInMonth.getDay())
+
+            const response = await todoModel.find({
+                from: { $not: { $gt: endDate } },
+                to: { $not: { $lt: startDate } },
+                groupId,
+            }).sort({ from: 'asc' });
+
+            // console.log(response);
             return res.json({ success: true, message: 'successfully', response });
+
         } catch (err) {
-            console.log('[ERROR]', err);
+            console.log('[TODO GET ERROR]', err);
             return res.status(500).json({ success: false, message: 'internal server', response });
         }
     }
@@ -51,7 +67,9 @@ class NoteController {
             if (!isUserInGroup) return res.json({ success: false, message: 'Bạn không trong nhóm này' });
 
             // console.log('[data]', data);
-            const response = await todoModel.create({ ...data, groupId });
+            const newData = { ...data, groupId, from: new Date(data.from), to: new Date(data.to) }
+            // console.log(newData);
+            const response = await todoModel.create(newData);
             // console.log('[newTodo]', newTodo);
 
             return res.json({ success: true, message: 'succesfully', response });
@@ -63,6 +81,79 @@ class NoteController {
         }
 
 
+    }
+
+
+    /**
+     * [POST] /api/todos/addTodo
+     * @param {object} req {groupId, userId, todoName}
+     * @param {*} res 
+     * @returns 
+     */
+    async addTodo(req, res) {
+        const { userId, groupId, todoName, todoId } = req.body;
+
+        if (!groupId || !todoName || !todoId) return res.json({ success: false, message: 'bad request' });
+
+        try {
+            const isUserInGroup = await groupModel
+                .exists(
+                    {
+                        _id: groupId,
+                        $or: [{ type: params.DEMO_GROUP_TYPE }, { users: userId }]
+                    },
+                );
+            if (!isUserInGroup) return res.json({ success: false, message: 'Bạn không trong nhóm này' });
+
+            const response = await todoModel.findOneAndUpdate(
+                { _id: todoId, groupId },
+                { $push: { todoList: { todo: todoName, state: false } } }, { new: true }
+            )
+            return res.json({ success: true, message: 'successfully', response });
+
+        } catch (err) {
+            console.log(`[todo add err]`, err);
+            return res.json({ success: true, message: 'internal server' });
+        }
+
+    }
+
+
+    /**
+     * [POST] /api/todos/changeState
+     * @param {*} req {noteId, todoId, state}
+     * @param {*} res 
+     * @returns 
+     */
+    async changeState(req, res) {
+        const { noteId, todoId, state, userId, groupId } = req.body;
+
+        if (!noteId || !todoId || state == undefined || !userId || !groupId) return res.json({ success: false, message: 'bad request' });
+
+        try {
+
+            const isUserInGroup = await groupModel
+                .exists(
+                    {
+                        _id: groupId,
+                        $or: [{ type: params.DEMO_GROUP_TYPE }, { users: userId }]
+                    },
+                );
+            if (!isUserInGroup) return res.json({ success: false, message: 'Bạn không trong nhóm này' });
+
+            const response = await todoModel.findOneAndUpdate({ _id: noteId, groupId, "todoList._id": todoId }, { $set: { "todoList.$.state": state } }, { new: true });
+
+
+            // const response = await todoModel.findOne({ _id: noteId });
+            // console.log(response);
+
+            return res.json({ success: true, message: 'successfully', response });
+
+        } catch (err) {
+            console.log(err);
+
+            return res.json({ success: false, message: 'internal server' });
+        }
     }
 
     /** [DELETE] /api/todos/delete 
@@ -93,10 +184,44 @@ class NoteController {
             return res.status(500).json({ success: false, message: 'internal server' });
         }
     }
+
+    /**
+     * [DELETE] /api/todos/deleteTodo
+     * @param {*} req {userId, noteId, todoId, groupId}
+     * @param {*} res 
+     */
+    async deleteTodo(req, res) {
+        const { userId, noteId, todoId, groupId } = req.body;
+        console.log(req.body);
+
+        if (!noteId || !groupId || !todoId) return res.json({ success: false, message: 'bad request' })
+
+        try {
+
+            const isUserInGroup = await groupModel
+                .exists(
+                    {
+                        _id: groupId,
+                        $or: [{ type: params.DEMO_GROUP_TYPE }, { users: userId }]
+                    },
+                );
+            if (!isUserInGroup) return res.json({ success: false, message: 'Bạn không trong nhóm này' });
+
+            const response = await todoModel.findOneAndUpdate({ _id: noteId, groupId }, { $pull: { todoList: { _id: todoId } } });
+
+            return res.json({ success: true, message: 'successfully', response });
+
+
+        } catch (err) {
+            console.log('todo delete todo err', err);
+            return res.json({ success: false, message: 'internal server' });
+        }
+    }
+
     // async test(req, res) {
     //     console.log(req.body);
     //     return res.json({ success: true, message: 'succesfully' });
     // }
 }
 
-module.exports = new NoteController;
+module.exports = new TodoController;

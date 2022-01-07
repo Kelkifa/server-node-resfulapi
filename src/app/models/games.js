@@ -14,4 +14,4 @@ const games = new Schema(
 );
 games.plugin(mongoose_delete, { overrideMethods: 'all' });
 
-module.exports = mongoose.model('games', games);
+module.exports = mongoose.model('game2s', games);
