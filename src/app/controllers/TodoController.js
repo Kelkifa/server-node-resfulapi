@@ -46,6 +46,35 @@ class TodoController {
         }
     }
 
+
+    /**
+     * [POST] /api/todos/getPassed
+     * @param {*} req {groupId}
+     * @param {*} res 
+     * @returns {Array} Passed Notes (to < new Date())
+     */
+    async getPassed(req, res) {
+        const { groupId, userId } = req.body;
+        if (!groupId) return res.json({ success: false, message: 'bad request' });
+        try {
+            const isUserInGroup = await groupModel
+                .exists(
+                    {
+                        _id: groupId,
+                        $or: [{ type: params.DEMO_GROUP_TYPE }, { users: userId }]
+                    },
+                );
+
+            if (!isUserInGroup) return res.json({ success: false, message: 'Bạn không trong nhóm này' });
+
+            const response = await todoModel.find({ groupId, to: { $lt: new Date() } }).sort({ to: 'asc' });
+            return res.json({ success: true, message: 'successfully', response });
+
+        } catch (err) {
+            console.log(err);
+            return res.json({ success: false, message: 'internal server' });
+        }
+    }
     /** [POST] /api/notes/add
      *  Add a new note
      *  public (logged)
@@ -182,6 +211,34 @@ class TodoController {
             return res.json({ success: true, message: 'successfully', response: data });
         } catch (err) {
             return res.status(500).json({ success: false, message: 'internal server' });
+        }
+    }
+
+    /**
+     * [POST] /api/todos/deleteMulti
+     * @param {Object} req {groupId, userId, noteList}
+     * @param {*} res 
+     */
+    async deleteMulti(req, res) {
+        const { groupId, userId, noteList } = req.body;
+
+        if (!groupId || !noteList) return res.json({ success: false, message: 'bad request' });
+        try {
+            const isUserInGroup = await groupModel
+                .exists(
+                    {
+                        _id: groupId,
+                        $or: [{ type: params.DEMO_GROUP_TYPE }, { users: userId }]
+                    },
+                );
+
+            if (!isUserInGroup) return res.json({ success: false, message: 'Bạn không trong nhóm này' });
+
+            // await todoModel.deleteMany({ _id: { $in: noteList } });
+            return res.json({ success: true, message: 'successfully' });
+        } catch (err) {
+            console.log(err);
+            return res.json({ success: false, message: 'internal server' });
         }
     }
 

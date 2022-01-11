@@ -183,6 +183,15 @@ Content-Type: application/json
     "todoId":"61d022692d321405d3b07f4c"
 }
 
+### TODO GET PASSED NOTE
+POST http://localhost:8080/api/todos/getPassed
+Content-Type: application/json
+
+{
+    "userId": "6176b75b9ba1c3309bdcfd14",
+    "groupId": "6185432d4db393e45c580824"
+}
+
 
 ### change home
 GET http://localhost:8080/change
