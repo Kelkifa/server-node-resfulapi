@@ -234,7 +234,7 @@ class TodoController {
 
             if (!isUserInGroup) return res.json({ success: false, message: 'Bạn không trong nhóm này' });
 
-            // await todoModel.deleteMany({ _id: { $in: noteList } });
+            await todoModel.deleteMany({ _id: { $in: noteList } });
             return res.json({ success: true, message: 'successfully' });
         } catch (err) {
             console.log(err);
