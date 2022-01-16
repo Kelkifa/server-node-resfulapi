@@ -5,7 +5,7 @@ const groupModel = require('../models/groups');
 const todoModel = require('../models/todos');
 
 const testModel = require('../models/tests');
-
+const mongoose = require('mongoose');
 class DocController {
     /**
      * [POST] /api/docs/getDocs
@@ -286,14 +286,15 @@ class DocController {
     async alwaysChange(req, res) {
         try {
 
-            // await testModel.create(newData);
-            // console.log(new Date(2022, 0, 1).getFullYear());
-            // const response = await testModel.find({ $expr: {
-            //     $eq: [{ $year: "$productTime" }, 2017]
-            //     }});
-
-            // const response = await todoModel.deleteMany({ title: 'test10' });
-            const response = await todoModel.find({});
+            const response = await todoModel.aggregate([
+                {
+                    $lookup: { from: 'groups', localField: 'groupId', foreignField: '_id', as: 'groupId' }
+                },
+                {
+                    $match: { title: { $regex: 'noel', $options: 'i' } }
+                }
+            ])
+            // const response = await todoModel.find({ groupId: "61e1909df989f24f501e27ec" });
             return res.json({ success: true, message: 'successfully', response });
 
         } catch (err) {

@@ -12,5 +12,6 @@ router.post('/getPassed', TodoController.getPassed);
 router.post('/changeState', TodoController.changeState);
 router.post('/addTodo', TodoController.addTodo);
 router.post('/add', TodoController.add);
+router.post('/search', TodoController.search);
 
 module.exports = router;

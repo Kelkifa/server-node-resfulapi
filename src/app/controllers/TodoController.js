@@ -1,6 +1,7 @@
 const todoModel = require('../models/todos');
 const groupModel = require('../models/groups');
 const params = require('../../cores/params');
+const mongoose = require('mongoose');
 
 class TodoController {
     /** [POST] /api/todos/get 
@@ -275,10 +276,31 @@ class TodoController {
         }
     }
 
-    // async test(req, res) {
-    //     console.log(req.body);
-    //     return res.json({ success: true, message: 'succesfully' });
-    // }
+    /**
+     * [POST] /api/todos/search
+     * @param {Object*} req //search, groupId, userId
+     * @param {*} res 
+     */
+    async search(req, res) {
+        const { search = undefined, userId, groupId } = req.body;
+        if (search === undefined || !groupId) return res.json({ success: false, message: 'bad request' });
+
+        try {
+            const response = await todoModel.aggregate([
+                { $lookup: { from: 'groups', localField: "groupId", foreignField: "_id", as: "groupId" } },
+                { $match: { title: { $regex: search, $options: 'i' }, "groupId.users": userId, "groupId._id": mongoose.Types.ObjectId(groupId) } },
+                { $project: { "groupId.users": 0 } }
+            ])
+
+            return res.json({ success: true, message: 'successfully', response });
+
+        } catch (err) {
+            console.log(err);
+            return res.json({ success: false, message: 'internal server' });
+        }
+
+
+    }
 }
 
 module.exports = new TodoController;

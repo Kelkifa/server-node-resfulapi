@@ -196,6 +196,16 @@ Content-Type: application/json
 ### change home
 GET http://localhost:8080/change
 
+### todo search  user: huan1
+POST http://localhost:8080/api/todos/search
+Content-Type: application/json
+
+{
+    "userId":"61e19085f989f24f501e27e7",
+    "search":"test"
+}
+
+
 
 ### always change
 
