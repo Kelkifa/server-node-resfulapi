@@ -18,16 +18,34 @@ class DocController {
     async getDocs(req, res) {
         const { userId, groupId } = req.body;
 
+
         if (!groupId) return res.json({ success: false, message: 'bad request' });
 
         try {
             // Check user is in group
-            const isUserInGroup = await groupModel
-                .exists({ _id: groupId, $or: [{ type: 'demo' }, { users: userId }] });
-            if (!isUserInGroup) return res.json({ success: false, message: 'not allow' });
+            const response = await docModel.aggregate([
+                {
+                    $lookup: { from: 'groups', localField: 'groupId', foreignField: '_id', as: 'group' }
+                },
+                {
+                    $match: {
+                        groupId: mongoose.Types.ObjectId(groupId),
+                        // "group.users": userId
+                        $or: [{ "group.type": 'demo' }, { "group.users": userId }]
+                    }
+                },
+                {
+                    $project: { groupId: 0, contents: 0, group: 0 }
+                }
+
+            ])
+
+            // const isUserInGroup = await groupModel
+            //     .exists({ _id: groupId, $or: [{ type: 'demo' }, { users: userId }] });
+            // if (!isUserInGroup) return res.json({ success: false, message: 'not allow' });
 
             // All good
-            const response = await docModel.find({ groupId: groupId }).select({ _id: 1, name: 1 });
+            // const response = await docModel.find({ groupId: groupId }).select({ _id: 1, name: 1 });
 
             return res.json({ success: true, message: 'successfully', response });
         } catch (err) {

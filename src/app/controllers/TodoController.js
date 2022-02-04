@@ -289,7 +289,7 @@ class TodoController {
             const response = await todoModel.aggregate([
                 { $lookup: { from: 'groups', localField: "groupId", foreignField: "_id", as: "groupId" } },
                 { $match: { title: { $regex: search, $options: 'i' }, "groupId.users": userId, "groupId._id": mongoose.Types.ObjectId(groupId) } },
-                { $project: { "groupId.users": 0 } }
+                // { $project: { "groupId.users": 0 } }
             ])
 
             return res.json({ success: true, message: 'successfully', response });

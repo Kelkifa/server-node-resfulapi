@@ -27,6 +27,15 @@ Content-Type: application/json
     "data":"haha"
 }
 
+### GET DOC
+POST http://localhost:8080/api/docs/getDocs
+Content-Type: application/json
+
+{
+    "groupId":"6189344665651c3c22e12276",
+    "userId":"6176b75b9ba1c3309bdcfd14"
+}
+
 ### Create a doc
 
 POST http://localhost:8080/api/docs/create
@@ -202,7 +211,8 @@ Content-Type: application/json
 
 {
     "userId":"61e19085f989f24f501e27e7",
-    "search":"test"
+    "groupId":"617d500cd146d3699a5ce899",
+    "search":"noel"
 }
 
 
