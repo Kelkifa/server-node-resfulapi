@@ -40,10 +40,6 @@ class DocController {
 
             ])
 
-            // const isUserInGroup = await groupModel
-            //     .exists({ _id: groupId, $or: [{ type: 'demo' }, { users: userId }] });
-            // if (!isUserInGroup) return res.json({ success: false, message: 'not allow' });
-
             // All good
             // const response = await docModel.find({ groupId: groupId }).select({ _id: 1, name: 1 });
 
@@ -68,13 +64,13 @@ class DocController {
 
         if (!name || !title || !content || !groupId) return res.json({ success: false, message: 'bad request' });
 
-        if (!userId) return res.json({ success: false, message: 'need login' });
+        // if (!userId) return res.json({ success: false, message: 'need login' });
 
 
         try {
             // Check user in group
             const isUserInGroup = await groupModel
-                .exists({ _id: groupId, users: userId, $not: { type: 'demo' } });
+                .exists({ _id: groupId, $or: [{ type: 'demo' }, { users: userId }] });
             if (!isUserInGroup) return res.json({ success: false, message: 'not allow' });
 
             // All good
@@ -108,7 +104,7 @@ class DocController {
             // Check user in group
             const isUserExistInGroup = await docModel
                 .findOne({ _id: docId, groupId })
-                .populate({ path: 'groupId', match: { users: userId }, select: '_id' })
+                .populate({ path: 'groupId', match: { $or: [{ type: 'demo' }, { users: userId }] }, select: '_id' })
                 .select('_id groupId');
 
             if (!isUserExistInGroup) return res.json({ success: false, message: 'not allow' });
@@ -206,7 +202,7 @@ class DocController {
             // Check user in group
             const isUserExistInGroup = await docModel
                 .findOne({ _id: docId })
-                .populate({ path: 'groupId', match: { users: userId }, select: '_id' })
+                .populate({ path: 'groupId', match: { $or: [{ type: 'demo' }, { users: userId }] }, select: '_id' })
                 .select('_id groupId');
 
 

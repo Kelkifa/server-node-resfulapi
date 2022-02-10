@@ -9,9 +9,11 @@ class TodoController {
      *  Public (logged)
     */
     async get(req, res) {
+        // return res.sendStatus(401);
         const { userId, groupId, year, month } = req.body;
 
         if (!groupId || year == undefined || !month == undefined) return res.json({ success: false, message: 'bad request' });
+        // 
 
         try {
             // Check user in group
@@ -288,7 +290,14 @@ class TodoController {
         try {
             const response = await todoModel.aggregate([
                 { $lookup: { from: 'groups', localField: "groupId", foreignField: "_id", as: "groupId" } },
-                { $match: { title: { $regex: search, $options: 'i' }, "groupId.users": userId, "groupId._id": mongoose.Types.ObjectId(groupId) } },
+                {
+                    $match: {
+                        title: { $regex: search, $options: 'i' },
+                        // "groupId.users": userId, 
+                        $or: [{ "groupId.users": userId }, { "groupId.type": "demo" }],
+                        "groupId._id": mongoose.Types.ObjectId(groupId)
+                    }
+                },
                 // { $project: { "groupId.users": 0 } }
             ])
 

@@ -1,10 +1,9 @@
 
 const userModel = require('../models/user');
-
+const resetTokenModel = require('../models/resetTokens');
 const argon2 = require('argon2');
-const jwt = require('jsonwebtoken');
-const { json } = require('express');
-
+const jwt = require('jsonwebtoken')
+const createAccessToken = require('../../cores/createAccessToken');
 class AuthController {
     /** [GET] /api/auth/firstAccess
      *  get user date first time access
@@ -115,6 +114,8 @@ class AuthController {
     async login(req, res) {
         const { data = {} } = req.body;
 
+        console.log(data);
+
         if (typeof data !== 'object')
             return res
                 // .status(400)
@@ -143,7 +144,8 @@ class AuthController {
                 .json({ success: false, message: 'Tài khoản hoạc mật khẩu không chính xác' })
 
             // Create token
-            const accessToken = jwt.sign({ userId: foundUser._id, isAdmin: foundUser.isAdmin }, process.env.JWT_SECRET);
+            const accessToken = createAccessToken({ userId: foundUser._id, isAdmin: foundUser.isAdmin });
+            const resetToken = jwt.sign({ userId: foundUser._id, isAdmin: foundUser.isAdmin }, process.env.JWT_REFRESH_SECRET)
 
 
             // All good
@@ -157,7 +159,8 @@ class AuthController {
                         username: foundUser.username,
                         isAdmin: foundUser.isAdmin
                     },
-                    token: accessToken
+                    token: accessToken,
+                    resetToken
                 })
 
         } catch (err) {
@@ -167,10 +170,50 @@ class AuthController {
 
     }
 
+    /**[POST] /api/auth/logout
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     */
+    async Logout(req, res) {
+        const token = req.body;
 
-    getUser(req, res) {
+        if (!token) return res.sendStatus(400);
+
+        try {
+            await resetTokenModel.deleteOne({ token })
+            return res.json({ success: true, message: 'successfully' });
+        } catch (err) {
+            console.log(err);
+            return res.sendStatus(500);
+        }
+    }
+
+    /**[POST] /api/auth/refreshToken
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
+    async RefreshToken(req, res) {
+        const { token } = req.body;
+
+        if (!token) return res.sendStatus(400);
+
+        // ALL GOOD
+        jwt.verify(token, process.env.JWT_REFRESH_SECRET, (err, data) => {
+            if (err) { console.log(err); return res.sendStatus(403); };
+            console.log(data);
+            const accessToken = createAccessToken({ userId: data.userId, isAdmin: data.isAdmin });
+
+            return res.json({ token: accessToken });
+        })
 
     }
+
+    // getUser(req, res) {
+
+    // }
 
 }
 
