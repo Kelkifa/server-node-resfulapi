@@ -27,8 +27,6 @@ class GroupController {
     async get(req, res) {
         const { userId } = req.body;
 
-        console.log(userId);
-
         try {
             // Get group with type === demo  ||  userId in user of group
             const response = await groupModel.
