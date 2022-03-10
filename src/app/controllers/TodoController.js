@@ -195,7 +195,7 @@ class TodoController {
     async delete(req, res) {
         const { data, userId, groupId } = req.body;
         // console.log(`[req body]`, req.body);
-        if (!data) return req.status(404).json({ success: false, message: 'bad request' });
+        if (!data) return req.json({ success: false, message: 'bad request' });
         try {
 
             // Is user in group
